@@ -8,17 +8,18 @@ them touch files, and the imports between them.
 A module imports from this directory only modules of the layers below its
 own; `tests/layers.test.js` fails otherwise. Lowest layer first:
 
-| Layer        | Modules                    | Does                                                                                                       |
-| ------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Basics       | `shortcuts`, `page-script` | Reads and checks the shortcut map and parses its key strings; the overview page's behaviour in the browser |
-| Views        | `key-map`, `lookup`        | Builds the key map cells; answers which entries, cells, combinations and characters use a key combination  |
-| Pages        | `overview`                 | Renders the overview page as HTML                                                                          |
-| Command line | `cli`                      | Parses the arguments, reads the map, writes the page                                                       |
+| Layer        | Modules                             | Does                                                                                                                                                            |
+| ------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Basics       | `shortcuts`, `page-script`, `print` | Reads and checks the shortcut map and parses its key strings; the overview page's behaviour in the browser; prints a page in a headless browser and measures it |
+| Views        | `key-map`, `lookup`, `markup`       | Builds the key map cells; answers which entries, cells, combinations and characters use a key combination; escapes HTML and turns key strings into key caps     |
+| Pages        | `overview`, `sheet`                 | Renders the overview page and the cheat sheet as HTML                                                                                                           |
+| Command line | `cli`                               | Parses the arguments, reads the map, writes the pages and the PDF                                                                                               |
 
 ## Files
 
 Only `cli` reads or writes files. Every other module takes data and returns
-data, so the tests call them without files on disk.
+data, so the tests call them without files on disk; `print` launches a
+headless browser for that, but hands the PDF back instead of writing it.
 
 ## Imports
 
@@ -32,13 +33,17 @@ flowchart TD
   cli["cli"] --> key_map["key-map"]
   cli["cli"] --> lookup["lookup"]
   cli["cli"] --> overview["overview"]
+  cli["cli"] --> print["print"]
+  cli["cli"] --> sheet["sheet"]
   cli["cli"] --> shortcuts["shortcuts"]
   key_map["key-map"] --> shortcuts["shortcuts"]
   lookup["lookup"] --> shortcuts["shortcuts"]
+  markup["markup"] --> shortcuts["shortcuts"]
   overview["overview"] --> key_map["key-map"]
   overview["overview"] --> lookup["lookup"]
+  overview["overview"] --> markup["markup"]
   overview["overview"] --> page_script["page-script"]
-  overview["overview"] --> shortcuts["shortcuts"]
+  sheet["sheet"] --> markup["markup"]
 ```
 
 <!-- end of module diagram -->

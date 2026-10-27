@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Command line: `check` reads a shortcut map and reports its size or every
 // problem in it; `overview` also writes the overview page; `lookup` names
-// what uses a key combination. The only module that reads or writes files.
+// what uses a key combination; `sheet` writes the cheat sheet and checks
+// that it prints to one page. The only module that reads or writes files.
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -14,15 +15,21 @@ import {
   parseQuery,
 } from "./lookup.js";
 import { renderOverview } from "./overview.js";
+import { printPage } from "./print.js";
 import { parseKeys, parseShortcuts, ShortcutsError } from "./shortcuts.js";
+import { renderSheet } from "./sheet.js";
 
 const DEFAULT_FILE = join(homedir(), "vc", "mac-config", "shortcuts.yaml");
 const DEFAULT_OUTPUT = "shortcut-overview.html";
+const DEFAULT_SHEET = "shortcut-sheet.html";
 const USAGE = `usage: node src/cli.js check [file]
        node src/cli.js overview [file] [output]
        node src/cli.js lookup <combination> [file]
+       node src/cli.js sheet [file] [output] [--pdf]
   file         the shortcut map (default: ${DEFAULT_FILE})
-  output       the page to write (default: ${DEFAULT_OUTPUT})
+  output       the page to write (default: ${DEFAULT_OUTPUT};
+               for sheet ${DEFAULT_SHEET})
+  --pdf        also write the sheet as a PDF next to it
   combination  keys in words or symbols, such as "ctrl opt space" or ⌃⌥⌘↓`;
 
 // Reads and checks a shortcut map; returns the data, or an exit code.
@@ -104,14 +111,52 @@ function lookup(words) {
   return 0;
 }
 
+async function sheet(file, output, pdf) {
+  const data = load(file);
+  if (typeof data === "number") return data;
+  const html = renderSheet(data);
+  let printed;
+  try {
+    printed = await printPage(html);
+  } catch (error) {
+    console.error(error.message);
+    return 2;
+  }
+  try {
+    writeFileSync(output, html);
+    if (pdf)
+      writeFileSync(output.replace(/\.html?$/, "") + ".pdf", printed.pdf);
+  } catch (error) {
+    console.error(`${output}: ${error.message}`);
+    return 2;
+  }
+  const rows = data.entries.flatMap((e) => e.sheet ?? []).length;
+  console.log(
+    `${output}: ${rows} rows, ${data.characters.length} characters, ` +
+      `${printed.pages} page${printed.pages === 1 ? "" : "s"}`,
+  );
+  const problems = [...printed.problems];
+  if (printed.pages !== 1)
+    problems.unshift(`prints to ${printed.pages} pages, not 1`);
+  for (const p of problems) console.error(p);
+  return problems.length ? 1 : 0;
+}
+
 const [command, ...args] = process.argv.slice(2);
-const [file = DEFAULT_FILE, output = DEFAULT_OUTPUT] = args;
+const pdf = args.includes("--pdf");
+const positional = args.filter((a) => a !== "--pdf");
+const [
+  file = DEFAULT_FILE,
+  output = command === "sheet" ? DEFAULT_SHEET : DEFAULT_OUTPUT,
+] = positional;
 if (command === "check") {
   process.exitCode = check(file);
 } else if (command === "overview") {
   process.exitCode = overview(file, output);
 } else if (command === "lookup") {
   process.exitCode = lookup(args);
+} else if (command === "sheet") {
+  process.exitCode = await sheet(file, output, pdf);
 } else {
   console.error(USAGE);
   process.exitCode = 2;

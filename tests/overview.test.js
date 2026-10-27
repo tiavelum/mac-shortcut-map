@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { buildKeyMap } from "../src/key-map.js";
-import { escapeHtml, keyCaps, renderOverview } from "../src/overview.js";
+import { escapeHtml, keyCaps } from "../src/markup.js";
+import { renderOverview } from "../src/overview.js";
 import { parseShortcuts } from "../src/shortcuts.js";
 
 const data = parseShortcuts(
