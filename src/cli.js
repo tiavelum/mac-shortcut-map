@@ -1,17 +1,24 @@
 #!/usr/bin/env node
-// Command line: `node src/cli.js check [file]` reads a shortcut map and
-// reports its size or every problem in it.
+// Command line: `check` reads a shortcut map and reports its size or every
+// problem in it; `overview` also writes the overview page. The only module
+// that reads or writes files.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { buildKeyMap } from "./key-map.js";
+import { renderOverview } from "./overview.js";
 import { parseKeys, parseShortcuts, ShortcutsError } from "./shortcuts.js";
 
 const DEFAULT_FILE = join(homedir(), "vc", "mac-config", "shortcuts.yaml");
+const DEFAULT_OUTPUT = "shortcut-overview.html";
 const USAGE = `usage: node src/cli.js check [file]
-  file  the shortcut map (default: ${DEFAULT_FILE})`;
+       node src/cli.js overview [file] [output]
+  file    the shortcut map (default: ${DEFAULT_FILE})
+  output  the page to write (default: ${DEFAULT_OUTPUT})`;
 
-function check(file) {
+// Reads and checks a shortcut map; returns the data, or an exit code.
+function load(file) {
   let text;
   try {
     text = readFileSync(file, "utf8");
@@ -30,6 +37,12 @@ function check(file) {
     console.error(`${error.problems.length} problem(s)`);
     return 1;
   }
+  return data;
+}
+
+function check(file) {
+  const data = load(file);
+  if (typeof data === "number") return data;
   const keyStrings = [
     ...data.entries.map((e) => e.keys),
     ...data.characters.map((c) => c.keys),
@@ -49,9 +62,30 @@ function check(file) {
   return 0;
 }
 
-const [command, file = DEFAULT_FILE] = process.argv.slice(2);
+function overview(file, output) {
+  const data = load(file);
+  if (typeof data === "number") return data;
+  try {
+    writeFileSync(output, renderOverview(data));
+  } catch (error) {
+    console.error(`${output}: ${error.message}`);
+    return 2;
+  }
+  const cells = buildKeyMap(data);
+  const free = cells.filter((c) => c.status === "free").length;
+  console.log(
+    `${output}: ${data.entries.length} entries, ${data.characters.length} characters, ` +
+      `${cells.length} key map cells (${free} free)`,
+  );
+  return 0;
+}
+
+const [command, file = DEFAULT_FILE, output = DEFAULT_OUTPUT] =
+  process.argv.slice(2);
 if (command === "check") {
   process.exitCode = check(file);
+} else if (command === "overview") {
+  process.exitCode = overview(file, output);
 } else {
   console.error(USAGE);
   process.exitCode = 2;
