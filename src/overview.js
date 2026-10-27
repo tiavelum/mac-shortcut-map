@@ -5,8 +5,8 @@
 
 import { buildKeyMap } from "./key-map.js";
 import { buildIndex, findCombination, parseQuery } from "./lookup.js";
+import { escapeHtml, keyCaps } from "./markup.js";
 import { pageScript } from "./page-script.js";
-import { parseKeys } from "./shortcuts.js";
 
 const SOURCES = [
   "macOS",
@@ -35,33 +35,6 @@ const LABELS = {
     unrecordable: "Cannot be recorded",
   },
 };
-
-/** Escapes text for use in HTML content and attribute values. */
-export function escapeHtml(value) {
-  return String(value ?? "").replace(
-    /[&<>"']/g,
-    (c) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        c
-      ],
-  );
-}
-
-// A key string as key caps: "⌃⌥ ← / →" is one cap per alternative, a
-// trigger in words keeps its modifiers as a cap and the words as text
-// ("⌥ Green button"), "–" stays a dash.
-export function keyCaps(text) {
-  return String(text)
-    .split(" · ")
-    .map((part) => {
-      const [, mods, rest] = part.trim().match(/^([⌃⌥⇧⌘🌐]*)\s*(.*)$/u);
-      if (part.trim() === "–") return "–";
-      const words = parseKeys(part).some((t) => t.words !== undefined);
-      if (!words) return `<kbd>${escapeHtml(part.trim())}</kbd>`;
-      return `${mods ? `<kbd>${escapeHtml(mods)}</kbd> ` : ""}<span class="words">${escapeHtml(rest)}</span>`;
-    })
-    .join(" ");
-}
 
 const pill = (kind, value, label) =>
   `<span class="pill ${kind}-${escapeHtml(value)}">${escapeHtml(label ?? value)}</span>`;
