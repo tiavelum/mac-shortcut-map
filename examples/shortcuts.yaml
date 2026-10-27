@@ -1,0 +1,126 @@
+# An invented shortcut map that uses every form of key string the format
+# allows. Run: node src/cli.js check examples/shortcuts.yaml
+rules:
+  easy_keys: [⌘, ⌥, ⌃, ⇧, Space, ←, →, ↑, ↓, Return, ⌫, Tab]
+  preferred_keys: 2
+  acceptable_keys: 3
+  comfortable_grips: [⌃⌥, ⌃⌥⌘]
+  uncomfortable_grips: [⇧⌘]
+findings:
+  - An invented finding.
+sheet_chapters:
+  - Windows
+  - Mouse
+entries:
+  - id: M1
+    source: macOS
+    where: Keyboard Shortcuts › Spotlight
+    action: Show Spotlight search
+    keys: ⌘ Space
+    scope: system
+    status: "on"
+    known_from: default
+    verdict: keep
+    reason: Easy keys, 2 keys
+  - id: M2
+    source: macOS
+    where: Keyboard Shortcuts › Accessibility
+    action: Zoom shortcuts
+    keys: ⌥⌘ 8 · ⌥⌘ = · ⌥⌘ -
+    scope: system
+    status: "off"
+    known_from: read
+    verdict: none
+  - id: M3
+    source: macOS
+    where: Keyboard › Dictation
+    action: Start dictation
+    keys: Left ⌘ pressed twice
+    scope: system
+    status: "on"
+    known_from: shot
+    verdict: keep
+  - id: M4
+    source: macOS
+    where: App menus (standard)
+    action: Show Help menu
+    keys: ⇧⌘ /
+    scope: apps
+    status: "on"
+    known_from: default
+    verdict: keep
+  - id: R1
+    source: Rectangle
+    where: Shortcuts tab
+    action: Left half
+    keys: ⌃⌥ ←
+    scope: system
+    status: "on"
+    known_from: shot
+    verdict: keep
+    sheet:
+      - { chapter: Windows, position: 1, label: Left half }
+  - id: R2
+    source: Rectangle
+    where: Behavior
+    action: Cycle sizes
+    keys: ⌃⌥ ← / → pressed again
+    scope: system
+    status: "on"
+    known_from: told
+    verdict: keep
+    sheet:
+      - { chapter: Windows, position: 2, label: "Again: ½ → ¼", keys: ⌃⌥ ← / → }
+  - id: R3
+    source: Rectangle
+    where: Shortcuts tab
+    action: First third
+    keys: –
+    scope: system
+    status: "off"
+    known_from: shot
+    verdict: none
+  - id: R4
+    source: Rectangle
+    where: Behavior › Maximize Settings
+    action: Maximize instead of full screen
+    keys: Green window button
+    scope: mouse
+    status: "on"
+    known_from: read
+    verdict: keep
+    sheet:
+      - { chapter: Mouse, position: 1, label: Maximize, keys: Green button }
+      - {
+          chapter: Mouse,
+          position: 2,
+          label: Full screen,
+          keys: ⌥ Green button,
+        }
+  - id: L1
+    source: Logi Options+
+    where: Buttons
+    action: Volume up
+    keys: Front side button
+    scope: mouse
+    status: "on"
+    known_from: shot
+    verdict: keep
+  - id: S1
+    source: macOS Services
+    where: Keyboard Shortcuts › Services › General
+    action: Tile windows
+    keys: ⌃🌐 F / C / arrows
+    scope: system
+    status: "check"
+    known_from: default
+    verdict: review
+characters:
+  - { id: T1, char: "[", name: Square bracket open, keys: ⌥ 5, tested: true }
+  - { id: T2, char: "^", name: Caret, keys: ^ key, tested: true }
+  - { id: T3, char: _, name: Underscore, keys: ⇧ - key, tested: false }
+combinations:
+  - { keys: ⌃ ⌫, status: free }
+  - { keys: ⌃⌥ Tab, status: unrecordable, note: The recorder rejects Tab. }
+  - { keys: ⌃ keypad /, status: free, keyboards: mx-keys }
+  - { keys: ⌥ ←, status: typing, note: Jump by word. }
