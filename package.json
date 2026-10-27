@@ -8,9 +8,10 @@
     "node": ">=22"
   },
   "scripts": {
-    "check": "prettier --check . && eslint . && node --test",
+    "check": "prettier --check . && eslint . && node scripts/module-diagram.js --check && node --test",
     "format": "prettier --write .",
-    "test": "node --test"
+    "test": "node --test",
+    "diagram": "node scripts/module-diagram.js"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

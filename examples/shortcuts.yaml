@@ -1,7 +1,7 @@
 # An invented shortcut map that uses every form of key string the format
 # allows. Run: node src/cli.js check examples/shortcuts.yaml
 rules:
-  easy_keys: [⌘, ⌥, ⌃, ⇧, Space, ←, →, ↑, ↓, Return, ⌫, Tab]
+  easy_keys: [⌘, ⌥, ⌃, ⇧, Space, ←, →, ↑, ↓, Return, ⌫, Tab, "-"]
   preferred_keys: 2
   acceptable_keys: 3
   comfortable_grips: [⌃⌥, ⌃⌥⌘]
