@@ -43,6 +43,14 @@ describe("renderOverview", () => {
       assert.ok(page.includes(`<td class="id">${c.id}</td>`), c.id);
     }
   });
+  it("has the key lookup with its index", () => {
+    assert.ok(page.includes('<input id="lookup"'));
+    const json = page.match(
+      /<script type="application\/json" id="lookup-index">(.*?)<\/script>/s,
+    )[1];
+    assert.ok(JSON.parse(json).some((r) => r.id === "R1"));
+    assert.ok(page.includes("function parseQuery("));
+  });
   it("shows every unused combination", () => {
     for (const c of data.combinations) {
       assert.ok(page.includes(`<kbd>${escapeHtml(c.keys)}</kbd>`), c.keys);
