@@ -133,7 +133,7 @@ async function sheet(file, output, pdf) {
   const rows = data.entries.flatMap((e) => e.sheet ?? []).length;
   console.log(
     `${output}: ${rows} rows, ${data.characters.length} characters, ` +
-      `${printed.pages} page${printed.pages === 1 ? "" : "s"}`,
+      `${printed.pages} page${printed.pages === 1 ? "" : "s"}, printed with ${printed.browser}`,
   );
   const problems = [...printed.problems];
   if (printed.pages !== 1)

@@ -9,9 +9,10 @@ const CONTENT_WIDTH = Math.round(((297 - 18) / 25.4) * 96);
 const CONTENT_HEIGHT = Math.round(((210 - 18) / 25.4) * 96);
 
 /**
- * Renders the HTML as print and returns { pages, problems, pdf }, where
- * problems names each row (by its data-row attribute) that wraps or whose
- * key cap is cut off. Throws when Playwright or its browser is missing.
+ * Renders the HTML as print and returns { pages, problems, pdf, browser },
+ * where problems names each row (by its data-row attribute) that wraps or
+ * whose key cap is cut off, and browser names the browser that printed.
+ * Throws when Playwright or both browsers are missing.
  */
 export async function printPage(html) {
   let chromium;
@@ -20,14 +21,23 @@ export async function printPage(html) {
   } catch (error) {
     throw new Error("Playwright is missing: run npm ci", { cause: error });
   }
+  // The installed Google Chrome has the same engine as Playwright's own
+  // Chromium and spares its download; Chromium covers machines without
+  // Chrome, and a Chrome that updated itself past what Playwright drives.
   let browser;
+  let name = "Google Chrome";
   try {
-    browser = await chromium.launch();
-  } catch (error) {
-    throw new Error(
-      `no browser for Playwright: run npx playwright install chromium (${error.message.split("\n")[0]})`,
-      { cause: error },
-    );
+    browser = await chromium.launch({ channel: "chrome" });
+  } catch {
+    name = "Chromium";
+    try {
+      browser = await chromium.launch();
+    } catch (error) {
+      throw new Error(
+        "no browser to print with: install Google Chrome, or run npx playwright install chromium",
+        { cause: error },
+      );
+    }
   }
   try {
     const page = await browser.newPage({
@@ -71,7 +81,7 @@ export async function printPage(html) {
     });
     const pages = (pdf.toString("latin1").match(/\/Type\s*\/Page\b/g) ?? [])
       .length;
-    return { pages, problems, pdf };
+    return { pages, problems, pdf, browser: name };
   } finally {
     await browser.close();
   }

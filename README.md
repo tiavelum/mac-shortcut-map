@@ -4,7 +4,7 @@ A tool for keeping track of the keyboard shortcuts on a Mac. It renders a shortc
 
 ## Getting started
 
-Requires macOS or Linux, git, and Node.js 22 or later. On a Mac, install Node.js with Homebrew and check its version:
+Requires macOS or Linux, git, Node.js 22 or later, and for the cheat sheet Google Chrome. On a Mac, install Node.js with Homebrew and check its version:
 
 ```sh
 brew install node
@@ -17,7 +17,6 @@ Then get the tool and run it on the invented example map:
 git clone https://github.com/tiavelum/mac-shortcut-map.git ~/vc/mac-shortcut-map
 cd ~/vc/mac-shortcut-map
 npm ci
-npx playwright install chromium
 node src/cli.js check examples/shortcuts.yaml
 ```
 
@@ -79,10 +78,16 @@ node src/cli.js sheet ~/vc/mac-config/shortcuts.yaml --pdf
 open shortcut-sheet.pdf
 ```
 
-It writes `shortcut-sheet.html`, or the path given after the map, and with `--pdf` also `shortcut-sheet.pdf` beside it: one A4 page in landscape with the entries the map places on the sheet, chapter by chapter, and every special character. It prints the sheet in a headless browser and checks it, then reports:
+It writes `shortcut-sheet.html`, or the path given after the map, and with `--pdf` also `shortcut-sheet.pdf` beside it: one A4 page in landscape with the entries the map places on the sheet, chapter by chapter, and every special character. It prints the sheet in Google Chrome, without opening a window, and checks it, then reports:
 
 ```
-shortcut-sheet.html: 54 rows, 24 characters, 1 page
+shortcut-sheet.html: 54 rows, 24 characters, 1 page, printed with Google Chrome
+```
+
+Without Google Chrome, or with a Chrome too new for the installed Playwright, it prints with Playwright's own Chromium instead, which has to be downloaded once:
+
+```sh
+npx playwright install chromium
 ```
 
 When the sheet prints to more than one page, a row wraps onto a second line or a key cap is cut off, it names each problem and exits with 1; a shorter `label` in the map's `sheet` place fixes a row. Both files are ignored by git.
