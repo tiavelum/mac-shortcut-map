@@ -4,7 +4,14 @@ A tool for keeping track of the keyboard shortcuts on a Mac. It renders a shortc
 
 ## Getting started
 
-Requires Node.js 22 or later and git.
+Requires macOS or Linux, git, and Node.js 22 or later. On a Mac, install Node.js with Homebrew and check its version:
+
+```sh
+brew install node
+node --version
+```
+
+Then get the tool and run it on the invented example map:
 
 ```sh
 git clone https://github.com/tiavelum/mac-shortcut-map.git ~/vc/mac-shortcut-map
