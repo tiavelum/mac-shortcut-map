@@ -4,6 +4,7 @@
 // returns the page as a string.
 
 import { buildKeyMap } from "./key-map.js";
+import { buildIndex, findCombination, parseQuery } from "./lookup.js";
 import { pageScript } from "./page-script.js";
 import { parseKeys } from "./shortcuts.js";
 
@@ -215,6 +216,9 @@ kbd{font:500 .82rem var(--mono);background:var(--key);border:1px solid var(--key
 .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .controls input{font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);flex:1 1 220px;max-width:340px}
 .chip{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:4px 12px;cursor:pointer}
+.lookup{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.lookup input{font:500 1rem var(--mono);padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);width:100%;max-width:420px;box-sizing:border-box}
+.lookup ul{margin:8px 0 0;padding:0;list-style:none}.lookup li{padding:3px 0}
 .chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--surface)}`;
 
 /** Renders the overview page of a parsed shortcut map as HTML. */
@@ -242,10 +246,19 @@ export function renderOverview(data, title = "Mac shortcut overview") {
 <main>
 <header><h1>${escapeHtml(title)}</h1><p class="muted">${data.entries.length} entries, ${data.characters.length} special characters, ${cells.length} key map cells. Key symbols: ⌃ Control · ⌥ Option · ⇧ Shift · ⌘ Command · 🌐 Globe.</p></header>
 ${findings}
+<section class="lookup" aria-label="Look up keys"><h2>Look up keys</h2>
+<p class="muted">Type a combination, such as <code>ctrl opt space</code>, <code>cmd shift -</code> or <code>⌃⌥⌘↓</code>, or click into the field and press it. Modifiers alone, such as <code>ctrl cmd shift</code>, list everything on that grip. A combination in use system-wide is caught before it reaches the page: type those.</p>
+<input id="lookup" type="text" autocomplete="off" spellcheck="false" placeholder="ctrl opt space" aria-label="Key combination to look up">
+<div id="lookup-out" aria-live="polite"></div></section>
 <div role="tablist">${panels.map(([id, label], i) => `<button type="button" role="tab" id="tab-${id}" aria-controls="panel-${id}" aria-selected="${i === 0}">${label}</button>`).join("")}</div>
 ${panels.map(([id, , html], i) => `<section role="tabpanel" id="panel-${id}" aria-labelledby="tab-${id}"${i ? " hidden" : ""}>\n${html}\n</section>`).join("\n")}
 </main>
-<script>(${pageScript.toString()})();</script>
+<script type="application/json" id="lookup-index">${JSON.stringify(buildIndex(data, cells)).replace(/</g, "\\u003c")}</script>
+<script>
+${parseQuery.toString()}
+${findCombination.toString()}
+(${pageScript.toString()})();
+</script>
 </body>
 </html>
 `;

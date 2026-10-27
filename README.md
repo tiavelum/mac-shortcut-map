@@ -47,7 +47,7 @@ It writes `shortcut-overview.html` into the current folder, or to the path given
 shortcut-overview.html: 86 entries, 24 characters, 117 key map cells (26 free)
 ```
 
-The page is one HTML file that opens in any browser, light or dark. Its findings sit at the top, then five tabs:
+The page is one HTML file that opens in any browser, light or dark. Its findings sit at the top, then a field that looks up a key combination as `lookup` below does, then five tabs:
 
 - **By source:** one table per source.
 - **All in one table:** sortable by column, with a text filter and toggles for switched-on, system-wide and to-review entries.
@@ -56,29 +56,44 @@ The page is one HTML file that opens in any browser, light or dark. Its findings
 
 `shortcut-overview.html` is ignored by git, because it holds the personal map.
 
+## Look up a key combination
+
+```sh
+node src/cli.js lookup ctrl opt left examples/shortcuts.yaml
+```
+
+```
+⌃⌥ ← is used by 2 entries:
+  R1    Rectangle: Left half (on, keep)
+  R2    Rectangle: Cycle sizes (on, keep)
+  K29   Key map: R1 Left half; R2 Cycle sizes (used)
+```
+
+It lists every entry, key map cell, unused combination and special character with exactly those keys. Without a file it reads `~/vc/mac-config/shortcuts.yaml`. The combination is typed in words or symbols: `ctrl`/`control`, `opt`/`option`/`alt`, `shift`, `cmd`/`command`, `space`, `return`/`enter`, `backspace`/`delete`, `tab`, `up`/`down`/`left`/`right`, `minus`, `keypad`, or `⌃⌥⌘↓`. Modifiers alone, such as `ctrl cmd shift`, list everything on that grip, sorted by key. When no entry uses the combination, it also lists the entries with the same key and other modifiers.
+
 ## Input
 
 `shortcuts.yaml` is kept in a private configuration repository. Its header explains the fields: entries with their keys, status, verdict and place on the cheat sheet; the special characters; the combinations no entry uses; and the rules for choosing keys. `examples/shortcuts.yaml` uses every form of key string the format allows.
 
 ## Files
 
-| Path                      | Contains                                                                           |
-| ------------------------- | ---------------------------------------------------------------------------------- |
-| `src/`                    | The tool; its README names the layers of its modules and shows their imports       |
-| `src/cli.js`              | The command line: `check` and `overview`; the only part that reads or writes files |
-| `scripts/`                | `module-diagram.js`, which writes the import diagram into `src/README.md`          |
-| `tests/`                  | The tests, run by `npm run check`                                                  |
-| `examples/`               | An invented shortcut map                                                           |
-| `package.json`            | The scripts (`check`, `test`, `format`, `diagram`) and the pinned dependencies     |
-| `.github/`                | The CI workflow that runs `npm run check` on every push and pull request           |
-| `eslint.config.js`        | The linter configuration                                                           |
-| `.prettierrc.json`        | The formatter configuration                                                        |
-| `.nvmrc`                  | The Node.js version CI uses                                                        |
-| `project-instructions.md` | The rules Claude follows in this repository; `CLAUDE.md` imports it                |
+| Path                      | Contains                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
+| `src/`                    | The tool; its README names the layers of its modules and shows their imports                 |
+| `src/cli.js`              | The command line: `check`, `overview` and `lookup`; the only part that reads or writes files |
+| `scripts/`                | `module-diagram.js`, which writes the import diagram into `src/README.md`                    |
+| `tests/`                  | The tests, run by `npm run check`                                                            |
+| `examples/`               | An invented shortcut map                                                                     |
+| `package.json`            | The scripts (`check`, `test`, `format`, `diagram`) and the pinned dependencies               |
+| `.github/`                | The CI workflow that runs `npm run check` on every push and pull request                     |
+| `eslint.config.js`        | The linter configuration                                                                     |
+| `.prettierrc.json`        | The formatter configuration                                                                  |
+| `.nvmrc`                  | The Node.js version CI uses                                                                  |
+| `project-instructions.md` | The rules Claude follows in this repository; `CLAUDE.md` imports it                          |
 
 ## Known limits
 
-It renders the overview page, but no key-combination lookup or cheat sheet yet.
+It renders the overview page and looks up key combinations, but renders no printable cheat sheet yet.
 
 ## License
 

@@ -1,12 +1,18 @@
 #!/usr/bin/env node
 // Command line: `check` reads a shortcut map and reports its size or every
-// problem in it; `overview` also writes the overview page. The only module
-// that reads or writes files.
+// problem in it; `overview` also writes the overview page; `lookup` names
+// what uses a key combination. The only module that reads or writes files.
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { buildKeyMap } from "./key-map.js";
+import {
+  buildIndex,
+  findCombination,
+  formatAnswer,
+  parseQuery,
+} from "./lookup.js";
 import { renderOverview } from "./overview.js";
 import { parseKeys, parseShortcuts, ShortcutsError } from "./shortcuts.js";
 
@@ -14,8 +20,10 @@ const DEFAULT_FILE = join(homedir(), "vc", "mac-config", "shortcuts.yaml");
 const DEFAULT_OUTPUT = "shortcut-overview.html";
 const USAGE = `usage: node src/cli.js check [file]
        node src/cli.js overview [file] [output]
-  file    the shortcut map (default: ${DEFAULT_FILE})
-  output  the page to write (default: ${DEFAULT_OUTPUT})`;
+       node src/cli.js lookup <combination> [file]
+  file         the shortcut map (default: ${DEFAULT_FILE})
+  output       the page to write (default: ${DEFAULT_OUTPUT})
+  combination  keys in words or symbols, such as "ctrl opt space" or ⌃⌥⌘↓`;
 
 // Reads and checks a shortcut map; returns the data, or an exit code.
 function load(file) {
@@ -80,12 +88,30 @@ function overview(file, output) {
   return 0;
 }
 
-const [command, file = DEFAULT_FILE, output = DEFAULT_OUTPUT] =
-  process.argv.slice(2);
+function lookup(words) {
+  // The map file, if given, is the last argument and ends in .yaml or .yml;
+  // everything before it is the combination, quoted or not.
+  const file = /\.ya?ml$/.test(words.at(-1) ?? "") ? words.pop() : DEFAULT_FILE;
+  const query = parseQuery(words.join(" "));
+  if (!query) {
+    console.error(USAGE);
+    return 2;
+  }
+  const data = load(file);
+  if (typeof data === "number") return data;
+  const index = buildIndex(data, buildKeyMap(data));
+  console.log(formatAnswer(query, findCombination(index, query)).join("\n"));
+  return 0;
+}
+
+const [command, ...args] = process.argv.slice(2);
+const [file = DEFAULT_FILE, output = DEFAULT_OUTPUT] = args;
 if (command === "check") {
   process.exitCode = check(file);
 } else if (command === "overview") {
   process.exitCode = overview(file, output);
+} else if (command === "lookup") {
+  process.exitCode = lookup(args);
 } else {
   console.error(USAGE);
   process.exitCode = 2;
