@@ -15,6 +15,7 @@ describe("printPage", () => {
     assert.equal(printed.pages, 1);
     assert.deepEqual(printed.problems, []);
     assert.equal(printed.pdf.subarray(0, 5).toString(), "%PDF-");
+    assert.ok(["Google Chrome", "Chromium"].includes(printed.browser));
   });
   it("names a row that wraps and a key cap that is cut off", async () => {
     const html = `<!doctype html><style>[data-row]{display:grid;grid-template-columns:40px 80px}kbd{white-space:nowrap}</style>
