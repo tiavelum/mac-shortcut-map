@@ -113,6 +113,15 @@ describe("parseShortcuts", () => {
       /⌘ Space is listed as unused, but entry M1 uses it/,
     );
   });
+  it("accepts Rectangle Pro as a source with ids starting R", () => {
+    const text = example.replaceAll(
+      "source: Rectangle\n",
+      "source: Rectangle Pro\n",
+    );
+    assert.notEqual(text, example);
+    const data = parseShortcuts(text, "map.yaml");
+    assert.ok(data.entries.some((e) => e.source === "Rectangle Pro"));
+  });
   it("names the line of malformed YAML", () => {
     fails("entries:\n  - id: [\n", /^map\.yaml:\d+: /);
   });
