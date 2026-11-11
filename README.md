@@ -64,8 +64,8 @@ node src/cli.js lookup ctrl opt left examples/shortcuts.yaml
 
 ```
 ⌃⌥ ← is used by 2 entries:
-  R1    Rectangle: Left half (on, keep)
-  R2    Rectangle: Cycle sizes (on, keep)
+  R1    Rectangle Pro: Left half (on, keep)
+  R2    Rectangle Pro: Cycle sizes (on, keep)
   K29   Key map: R1 Left half; R2 Cycle sizes (used)
 ```
 
