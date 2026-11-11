@@ -13,6 +13,7 @@ const SOURCES = [
   "macOS Services",
   "macOS App Shortcuts",
   "Rectangle",
+  "Rectangle Pro",
   "Claude",
   "Logi Options+",
 ];

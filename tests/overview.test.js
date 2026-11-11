@@ -52,6 +52,21 @@ describe("renderOverview", () => {
     assert.ok(JSON.parse(json).some((r) => r.id === "R1"));
     assert.ok(page.includes("function parseQuery("));
   });
+  it("gives Rectangle Pro a table of its own after Rectangle", () => {
+    const [first, ...rest] = data.entries.filter(
+      (e) => e.source === "Rectangle",
+    );
+    const mixed = renderOverview({
+      ...data,
+      entries: data.entries.map((e) =>
+        rest.includes(e) ? { ...e, source: "Rectangle Pro" } : e,
+      ),
+    });
+    assert.ok(first && rest.length > 0);
+    const rectangle = mixed.indexOf("<h2>Rectangle <span");
+    const pro = mixed.indexOf("<h2>Rectangle Pro <span");
+    assert.ok(rectangle >= 0 && pro > rectangle);
+  });
   it("shows every unused combination", () => {
     for (const c of data.combinations) {
       assert.ok(page.includes(`<kbd>${escapeHtml(c.keys)}</kbd>`), c.keys);
