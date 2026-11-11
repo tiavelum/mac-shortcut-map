@@ -11,7 +11,6 @@ const SOURCE_PREFIX = {
   macOS: "M",
   "macOS Services": "S",
   "macOS App Shortcuts": "A",
-  Rectangle: "R",
   "Rectangle Pro": "R",
   Claude: "C",
   "Logi Options+": "L",

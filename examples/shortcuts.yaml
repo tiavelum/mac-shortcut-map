@@ -50,7 +50,7 @@ entries:
     known_from: default
     verdict: keep
   - id: R1
-    source: Rectangle
+    source: Rectangle Pro
     where: Shortcuts tab
     action: Left half
     keys: ⌃⌥ ←
@@ -61,7 +61,7 @@ entries:
     sheet:
       - { chapter: Windows, position: 1, label: Left half }
   - id: R2
-    source: Rectangle
+    source: Rectangle Pro
     where: Behavior
     action: Cycle sizes
     keys: ⌃⌥ ← / → pressed again
@@ -72,7 +72,7 @@ entries:
     sheet:
       - { chapter: Windows, position: 2, label: "Again: ½ → ¼", keys: ⌃⌥ ← / → }
   - id: R3
-    source: Rectangle
+    source: Rectangle Pro
     where: Shortcuts tab
     action: First third
     keys: –
@@ -81,7 +81,7 @@ entries:
     known_from: shot
     verdict: none
   - id: R4
-    source: Rectangle
+    source: Rectangle Pro
     where: Behavior › Maximize Settings
     action: Maximize instead of full screen
     keys: Green window button
